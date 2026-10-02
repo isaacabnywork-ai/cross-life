@@ -56,7 +56,7 @@ export const About: React.FC = () => {
       <WhoIsItFor />
 
       {/* What's Unique About CrossLife? (Substance over style, Truth over trend) */}
-      <WhatsUnique />
+      <WhatsUnique showFullText={true} />
 
       {/* Hopes & Goals (01 to 05 Numbered Layout) */}
       <GoalsSection />

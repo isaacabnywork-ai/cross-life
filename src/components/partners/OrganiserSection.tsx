@@ -3,9 +3,56 @@ import { Section } from '../common/Section';
 import { Container } from '../common/Container';
 import { brandContent } from '../../data/content';
 import { partnerData, partnerOverview } from '../../data/partners';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-export const OrganiserSection: React.FC = () => {
+interface OrganiserSectionProps {
+  isCompact?: boolean;
+}
+
+export const OrganiserSection: React.FC<OrganiserSectionProps> = ({ isCompact = false }) => {
+  if (isCompact) {
+    return (
+      <Section variant="offwhite" spacing="lg" id="organiser">
+        <Container>
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-subtle border border-slate-200/80 flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+              <div className="w-14 h-14 shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-12 h-12 drop-shadow-sm">
+                  <polygon points="50,15 85,50 50,85 15,50" fill="#0F3158" />
+                  <polygon points="50,15 65,30 50,45 35,30" fill="#1E4F85" />
+                  <polygon points="65,30 85,50 70,65 50,45" fill="#2A66A8" />
+                  <polygon points="50,45 70,65 50,85 30,65" fill="#3B82F6" />
+                  <polygon points="35,30 50,45 30,65 15,50" fill="#93C5FD" />
+                </svg>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold tracking-widest uppercase text-navy-800 bg-navy-50 px-2.5 py-0.5 rounded-full border border-navy-100 mb-1 inline-block">
+                  Conference Organiser
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-navy-950">
+                  Equip Indian Churches
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-lg mt-1 leading-relaxed">
+                  A pastoral fellowship committed to biblical church revitalisation and raising the next generation of Gospel-centered believers across India.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+              <Link
+                to="/partners"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-navy-900 transition-colors"
+              >
+                <span>About Organiser & Partners</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
   return (
     <Section variant="offwhite" spacing="xl" id="organiser">
       <Container>

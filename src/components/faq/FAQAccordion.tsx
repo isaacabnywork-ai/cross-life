@@ -4,17 +4,22 @@ import { Container } from '../common/Container';
 import { SectionHeading } from '../common/SectionHeading';
 import { faqData } from '../../data/faq';
 import { FAQItem } from './FAQItem';
-import { HelpCircle, Mail, Phone } from 'lucide-react';
+import { HelpCircle, Mail, Phone, ArrowRight } from 'lucide-react';
 import { siteConfig } from '../../config/site';
+import { Link } from 'react-router-dom';
 
 interface FAQAccordionProps {
   showAllCategories?: boolean;
+  isCompact?: boolean;
 }
 
-export const FAQAccordion: React.FC<FAQAccordionProps> = ({ showAllCategories = false }) => {
+export const FAQAccordion: React.FC<FAQAccordionProps> = ({ 
+  showAllCategories = false,
+  isCompact = false 
+}) => {
   const [selectedCategory, setSelectedCategory] = useState<string>(faqData[0].category);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({
-    'overview-1': true // First item open by default
+    'overview-1': true
   });
 
   const toggleItem = (id: string) => {
@@ -24,9 +29,54 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({ showAllCategories = 
     }));
   };
 
+  // In compact mode for Homepage, extract the 4 most critical questions
+  const compactItems = [
+    faqData[0].items[0], // What is included in the registration fee?
+    faqData[0].items[1], // Who is eligible to attend?
+    faqData[0].items[2], // What are the dates and timings?
+    faqData[1].items[0]  // How do I apply the discount coupon code?
+  ].filter(Boolean);
+
   const categoriesToDisplay = showAllCategories
     ? faqData
     : faqData.filter(c => c.category === selectedCategory);
+
+  if (isCompact) {
+    return (
+      <Section variant="white" spacing="xl" id="faq">
+        <Container size="narrow">
+          <SectionHeading
+            eyebrow="COMMON INQUIRIES"
+            title="Frequently Asked Questions"
+            subtitle="Quick answers to what's included, eligibility, and conference dates."
+          />
+
+          <div className="space-y-3 mb-10">
+            {compactItems.map((item) => (
+              <FAQItem
+                key={item.id}
+                id={item.id}
+                question={item.question}
+                answer={item.answer}
+                isOpen={!!openItems[item.id]}
+                onToggle={() => toggleItem(item.id)}
+              />
+            ))}
+          </div>
+
+          <div className="text-center pt-2">
+            <Link
+              to="/faq"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200/80 text-navy-950 font-bold text-xs sm:text-sm uppercase tracking-wider transition-colors"
+            >
+              <span>View All 18 FAQs (Travel, Dorms & Aid)</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
 
   return (
     <Section variant="white" spacing="xl" id="faq">

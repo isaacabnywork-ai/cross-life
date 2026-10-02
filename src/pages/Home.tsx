@@ -1,17 +1,13 @@
 import React from 'react';
 import { Hero } from '../components/hero/Hero';
-import { EventOverview } from '../components/event/EventOverview';
 import { ThreePillars } from '../components/pillars/ThreePillars';
-import { WhyCrossLife } from '../components/about/WhyCrossLife';
-import { WhoIsItFor } from '../components/about/WhoIsItFor';
 import { WhatsUnique } from '../components/about/WhatsUnique';
-import { GoalsSection } from '../components/about/GoalsSection';
-import { SpeakerSection } from '../components/speakers/SpeakerSection';
-import { OrganiserSection } from '../components/partners/OrganiserSection';
+import { WhoIsItFor } from '../components/about/WhoIsItFor';
 import { VenueSection } from '../components/venue/VenueSection';
-import { BookstoreSection } from '../components/bookstore/BookstoreSection';
+import { SpeakerSection } from '../components/speakers/SpeakerSection';
 import { BookPromotion } from '../components/bookstore/BookPromotion';
 import { FAQAccordion } from '../components/faq/FAQAccordion';
+import { OrganiserSection } from '../components/partners/OrganiserSection';
 import { CTASection } from '../components/common/CTASection';
 import { useRegistration } from '../context/RegistrationContext';
 
@@ -20,46 +16,34 @@ export const Home: React.FC = () => {
 
   return (
     <>
-      {/* 1. HERO (White) */}
+      {/* 1. HERO — Dates, Venue, Live Countdown, Direct Actions */}
       <Hero onRegisterClick={openRegistration} />
 
-      {/* 2. EVENT OVERVIEW (Light Blue) */}
-      <EventOverview onRegisterClick={openRegistration} />
-
-      {/* 3. THREE PILLARS (Dark Navy: One Life / Desire / Purpose) */}
+      {/* 2. THE THREE PILLARS — Live for Christ • Glorify Christ • Proclaim Christ */}
       <ThreePillars />
 
-      {/* 4. WHY CROSSLIFE (White Editorial Split) */}
-      <WhyCrossLife />
+      {/* 3. WHAT MAKES CROSSLIFE UNIQUE — Substance Over Style • Truth Over Trend */}
+      <WhatsUnique showFullText={false} />
 
-      {/* 5. WHO IS CROSSLIFE FOR (Light Blue) */}
+      {/* 4. WHO IS CROSSLIFE FOR — Scannable 4-card profile for ages 18–25 */}
       <WhoIsItFor />
 
-      {/* 6. WHAT'S UNIQUE (Dark Navy: Substance Over Style • Truth Over Trend) */}
-      <WhatsUnique />
-
-      {/* 7. HOPES & GOALS (White Numbered Editorial 01–05) */}
-      <GoalsSection />
-
-      {/* 8. SPEAKERS (Image / Dark Navy: Pastors from Across India) */}
-      <SpeakerSection />
-
-      {/* 9. ORGANISER & PARTNERS (Off-White / Light) */}
-      <OrganiserSection />
-
-      {/* 10. VENUE (White: Ashirwad Global Learning Centre, Hyderabad) */}
+      {/* 5. VENUE & CAMPUS GROUNDS — Ashirwad Hyderabad, Dorms & Communal Dining */}
       <VenueSection />
 
-      {/* 11. DEDICATED BOOKSTORE (Light Blue: Curated by For The Truth) */}
-      <BookstoreSection />
+      {/* 6. SPEAKERS & EXPOSITION — Pastors from across India */}
+      <SpeakerSection />
 
-      {/* 12. FREE BOOK (Green-Tinted: Don't Waste Your Life) */}
+      {/* 7. LITERATURE & FREE BOOK GIFT — Don't Waste Your Life by John Piper */}
       <BookPromotion onRegisterClick={openRegistration} />
 
-      {/* 13. FAQ (White Accordion) */}
-      <FAQAccordion />
+      {/* 8. ESSENTIAL FAQs — Top 4 questions with direct link to full FAQ catalog */}
+      <FAQAccordion isCompact />
 
-      {/* 14. FINAL CTA (Navy) */}
+      {/* 9. ORGANISER & STRATEGIC PARTNERS — Sleek partnership strip */}
+      <OrganiserSection isCompact />
+
+      {/* 10. FINAL INVITATION CTA */}
       <CTASection onRegisterClick={openRegistration} />
     </>
   );

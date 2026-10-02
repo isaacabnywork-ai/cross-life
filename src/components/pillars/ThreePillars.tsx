@@ -55,8 +55,8 @@ export const ThreePillars: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="space-y-1 mb-4">
-                  <span className="text-xs font-bold text-gold-400 uppercase tracking-widest block">
+                <div className="space-y-1.5 mb-4">
+                  <span className="text-xs font-mono font-bold text-gold-400 uppercase tracking-widest block">
                     {item.pillar}
                   </span>
                   <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
@@ -64,11 +64,7 @@ export const ThreePillars: React.FC = () => {
                   </h3>
                 </div>
 
-                <div className="text-sm font-semibold text-slate-200 mb-3 font-serif italic">
-                  “{item.meaning}”
-                </div>
-
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-300 leading-relaxed">
                   {item.description}
                 </p>
               </div>
