@@ -16,11 +16,18 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ item, isOpen, onClose, onReg
   const { columns, highlight } = item.megaMenu;
 
   return (
-    <div
-      className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-modal border-t border-slate-200/80 transition-all duration-200 z-50 animate-in fade-in slide-in-from-top-2"
-      onMouseLeave={onClose}
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+    <>
+      {/* Background Dim Backdrop */}
+      <div
+        className="fixed inset-0 top-[110px] bg-navy-950/25 backdrop-blur-[1px] z-40 transition-opacity animate-in fade-in duration-200"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <div
+        className="absolute top-full left-0 right-0 w-full bg-white shadow-modal border-t border-slate-200/90 transition-all duration-200 z-50 animate-in fade-in slide-in-from-top-1"
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main 3 Columns */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -121,5 +128,6 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ item, isOpen, onClose, onReg
         </div>
       </div>
     </div>
+  </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { navigationData, type NavItem } from '../../data/navigation';
 import { MegaMenu } from './MegaMenu';
@@ -18,8 +18,14 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isScrolled } = useScrollDirection();
   const location = useLocation();
+  const headerRef = useRef<HTMLElement>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const handleMouseEnter = (item: NavItem) => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     if (item.megaMenu) {
       setActiveMegaMenu(item.label);
     } else {
@@ -27,9 +33,54 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
     }
   };
 
+  const handleMouseLeave = () => {
+    timeoutRef.current = window.setTimeout(() => {
+      setActiveMegaMenu(null);
+    }, 150);
+  };
+
+  const handleMenuEnter = () => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
   const closeMegaMenu = () => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setActiveMegaMenu(null);
   };
+
+  // Close on route change during render
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+  if (prevPathname !== location.pathname) {
+    setPrevPathname(location.pathname);
+    if (activeMegaMenu !== null) {
+      setActiveMegaMenu(null);
+    }
+  }
+
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        closeMegaMenu();
+      }
+    };
+    if (activeMegaMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeMegaMenu]);
+
+  const activeItem = navigationData.find(
+    (item) => item.label === activeMegaMenu && item.megaMenu
+  );
 
   return (
     <>
@@ -59,8 +110,11 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
 
       {/* Main Sticky Header */}
       <header
+        ref={headerRef}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMenuEnter}
         className={cn(
-          'sticky top-0 left-0 right-0 z-40 transition-all duration-300',
+          'sticky top-0 left-0 right-0 z-40 transition-all duration-300 relative',
           isScrolled
             ? 'bg-white/95 backdrop-blur-md shadow-subtle border-b border-slate-200/80 py-3'
             : 'bg-white/90 backdrop-blur-sm border-b border-slate-100 py-4 sm:py-5'
@@ -80,7 +134,6 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
                 alt="CrossLife"
                 className="h-9 sm:h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
                 onError={(e) => {
-                  // Fallback logo in case image fails to load
                   e.currentTarget.style.display = 'none';
                   const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
                   if (fallback) fallback.style.display = 'flex';
@@ -102,7 +155,6 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
               return (
                 <div
                   key={idx}
-                  className="relative"
                   onMouseEnter={() => handleMouseEnter(item)}
                 >
                   {hasMegaMenu ? (
@@ -112,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
                       className={cn(
                         'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-bold tracking-wide transition-colors uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-700',
                         isMegaActive
-                          ? 'text-navy-900 bg-navy-50'
+                          ? 'text-navy-950 bg-navy-50 font-extrabold'
                           : 'text-slate-700 hover:text-navy-950 hover:bg-slate-50'
                       )}
                       aria-expanded={isMegaActive}
@@ -138,16 +190,6 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
                     >
                       {item.label}
                     </Link>
-                  )}
-
-                  {/* Mega Menu Dropdown */}
-                  {hasMegaMenu && (
-                    <MegaMenu
-                      item={item}
-                      isOpen={isMegaActive}
-                      onClose={closeMegaMenu}
-                      onRegisterClick={onRegisterClick}
-                    />
                   )}
                 </div>
               );
@@ -175,6 +217,16 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
             </button>
           </div>
         </div>
+
+        {/* Global Full-Width Mega Menu Mounted at Header Level */}
+        {activeItem && (
+          <MegaMenu
+            item={activeItem}
+            isOpen={true}
+            onClose={closeMegaMenu}
+            onRegisterClick={onRegisterClick}
+          />
+        )}
       </header>
 
       {/* Mobile Drawer */}
