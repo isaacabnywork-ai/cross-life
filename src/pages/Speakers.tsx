@@ -1,15 +1,10 @@
 import React from 'react';
 import { PageHero } from '../components/common/PageHero';
 import { SpeakerSection } from '../components/speakers/SpeakerSection';
-import { CTASection } from '../components/common/CTASection';
-import { useRegistration } from '../context/RegistrationContext';
 import { Container } from '../components/common/Container';
 import { Section } from '../components/common/Section';
 
-
 export const Speakers: React.FC = () => {
-  const { openRegistration } = useRegistration();
-
   return (
     <>
       <PageHero
@@ -38,9 +33,6 @@ export const Speakers: React.FC = () => {
 
       {/* Main Speakers Component */}
       <SpeakerSection />
-
-      {/* Final CTA */}
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

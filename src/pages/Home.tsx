@@ -8,7 +8,6 @@ import { SpeakerSection } from '../components/speakers/SpeakerSection';
 import { BookPromotion } from '../components/bookstore/BookPromotion';
 import { FAQAccordion } from '../components/faq/FAQAccordion';
 import { OrganiserSection } from '../components/partners/OrganiserSection';
-import { CTASection } from '../components/common/CTASection';
 import { useRegistration } from '../context/RegistrationContext';
 
 export const Home: React.FC = () => {
@@ -42,9 +41,6 @@ export const Home: React.FC = () => {
 
       {/* 9. ORGANISER & STRATEGIC PARTNERS — Sleek partnership strip */}
       <OrganiserSection isCompact />
-
-      {/* 10. FINAL INVITATION CTA */}
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

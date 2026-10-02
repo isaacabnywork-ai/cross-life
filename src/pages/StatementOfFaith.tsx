@@ -5,12 +5,8 @@ import { Container } from '../components/common/Container';
 import { statementOfFaithData, type ArticleOfFaith } from '../data/statementOfFaith';
 import { siteConfig } from '../config/site';
 import { Bookmark } from 'lucide-react';
-import { CTASection } from '../components/common/CTASection';
-import { useRegistration } from '../context/RegistrationContext';
 
 export const StatementOfFaith: React.FC = () => {
-  const { openRegistration } = useRegistration();
-
   return (
     <>
       <PageHero
@@ -104,8 +100,6 @@ export const StatementOfFaith: React.FC = () => {
           </div>
         </Container>
       </Section>
-
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

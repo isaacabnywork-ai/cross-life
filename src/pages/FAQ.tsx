@@ -1,15 +1,11 @@
 import React from 'react';
 import { PageHero } from '../components/common/PageHero';
 import { FAQAccordion } from '../components/faq/FAQAccordion';
-import { CTASection } from '../components/common/CTASection';
-import { useRegistration } from '../context/RegistrationContext';
 import { Container } from '../components/common/Container';
 import { Section } from '../components/common/Section';
 import { Train } from 'lucide-react';
 
 export const FAQ: React.FC = () => {
-  const { openRegistration } = useRegistration();
-
   return (
     <>
       <PageHero
@@ -49,9 +45,6 @@ export const FAQ: React.FC = () => {
 
       {/* FAQ Accordion with all categories visible */}
       <FAQAccordion showAllCategories={true} />
-
-      {/* Final CTA */}
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

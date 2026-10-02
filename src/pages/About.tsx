@@ -8,14 +8,10 @@ import { WhoIsItFor } from '../components/about/WhoIsItFor';
 import { WhatsUnique } from '../components/about/WhatsUnique';
 import { GoalsSection } from '../components/about/GoalsSection';
 import { OrganiserSection } from '../components/partners/OrganiserSection';
-import { CTASection } from '../components/common/CTASection';
-import { useRegistration } from '../context/RegistrationContext';
 import { brandContent } from '../data/content';
 import { Sparkles } from 'lucide-react';
 
 export const About: React.FC = () => {
-  const { openRegistration } = useRegistration();
-
   return (
     <>
       <PageHero
@@ -63,9 +59,6 @@ export const About: React.FC = () => {
 
       {/* Equip Indian Churches Organiser Section */}
       <OrganiserSection />
-
-      {/* Final Call to Action */}
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

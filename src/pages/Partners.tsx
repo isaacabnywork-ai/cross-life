@@ -1,15 +1,10 @@
 import React from 'react';
 import { PageHero } from '../components/common/PageHero';
 import { OrganiserSection } from '../components/partners/OrganiserSection';
-import { CTASection } from '../components/common/CTASection';
-import { useRegistration } from '../context/RegistrationContext';
 import { Container } from '../components/common/Container';
 import { Section } from '../components/common/Section';
 
-
 export const Partners: React.FC = () => {
-  const { openRegistration } = useRegistration();
-
   return (
     <>
       <PageHero
@@ -38,9 +33,6 @@ export const Partners: React.FC = () => {
           </div>
         </Container>
       </Section>
-
-      {/* Final CTA */}
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

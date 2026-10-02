@@ -3,12 +3,8 @@ import { PageHero } from '../components/common/PageHero';
 import { ContactForm } from '../components/contact/ContactForm';
 import { Container } from '../components/common/Container';
 import { Section } from '../components/common/Section';
-import { CTASection } from '../components/common/CTASection';
-import { useRegistration } from '../context/RegistrationContext';
 
 export const Contact: React.FC = () => {
-  const { openRegistration } = useRegistration();
-
   return (
     <>
       <PageHero
@@ -23,8 +19,6 @@ export const Contact: React.FC = () => {
           <ContactForm />
         </Container>
       </Section>
-
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };

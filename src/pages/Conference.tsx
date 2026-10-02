@@ -6,7 +6,6 @@ import { EventOverview } from '../components/event/EventOverview';
 import { VenueSection } from '../components/venue/VenueSection';
 import { BookstoreSection } from '../components/bookstore/BookstoreSection';
 import { BookPromotion } from '../components/bookstore/BookPromotion';
-import { CTASection } from '../components/common/CTASection';
 import { useRegistration } from '../context/RegistrationContext';
 import { eventConfig } from '../data/event';
 import { brandContent, type PillarItem } from '../data/content';
@@ -96,9 +95,6 @@ export const Conference: React.FC = () => {
 
       {/* Free Book Promotion */}
       <BookPromotion onRegisterClick={openRegistration} />
-
-      {/* Final CTA */}
-      <CTASection onRegisterClick={openRegistration} />
     </>
   );
 };
