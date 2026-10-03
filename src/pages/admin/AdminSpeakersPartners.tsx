@@ -536,3 +536,5 @@ export const AdminSpeakersPartners: React.FC = () => {
     </div>
   );
 };
+
+export default AdminSpeakersPartners;

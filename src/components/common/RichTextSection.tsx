@@ -6,11 +6,12 @@ import { ArrowRight } from 'lucide-react';
 import type { RichTextSectionData } from '../../types/cms';
 
 interface RichTextSectionProps {
+  id?: string;
   data?: RichTextSectionData;
   onCtaClick?: () => void;
 }
 
-export const RichTextSection: React.FC<RichTextSectionProps> = ({ data, onCtaClick }) => {
+export const RichTextSection: React.FC<RichTextSectionProps> = ({ id, data, onCtaClick }) => {
   if (!data) return null;
 
   const { badge, heading, subtitle, content, ctaText, ctaHref } = data;
@@ -19,7 +20,7 @@ export const RichTextSection: React.FC<RichTextSectionProps> = ({ data, onCtaCli
   const paragraphs = content ? content.split(/\n\n+/) : [];
 
   return (
-    <Section variant="white" spacing="xl">
+    <Section variant="white" spacing="xl" id={id}>
       <Container size="narrow">
         <div className="space-y-6">
           {badge && (

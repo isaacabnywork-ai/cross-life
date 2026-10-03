@@ -21,6 +21,17 @@ export const SectionEditModal: React.FC<SectionEditModalProps> = ({
   const [data, setData] = useState<any>(JSON.parse(JSON.stringify(section.data || {})));
   const [mediaPickerField, setMediaPickerField] = useState<string | null>(null);
 
+
+  // Handle Escape key to dismiss
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleDataChange = (field: string, value: any) => {

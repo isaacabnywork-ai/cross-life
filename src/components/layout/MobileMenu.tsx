@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, X, Calendar } from 'lucide-react';
+import { ChevronDown, X, Calendar, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '../common/Button';
 import { eventConfig } from '../../data/event';
-import { siteConfig } from '../../config/site';
+import { navigationData } from '../../data/navigation';
+import { useCMS } from '../../context/CMSContext';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -12,16 +13,47 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onRegisterClick }) => {
-  const [openSection, setOpenSection] = useState<string | null>('about');
+  const { navigation, globalSettings } = useCMS();
+  const navItems = (navigation && navigation.length > 0)
+    ? navigation.filter((item) => item.isVisible)
+    : (navigationData as any[]);
+
+  const [openSectionId, setOpenSectionId] = useState<string | null>(navItems[0]?.id || null);
+
+  // Keyboard Escape & Body Scroll Lock
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const toggleSection = (section: string) => {
-    setOpenSection(openSection === section ? null : section);
+  const toggleSection = (id: string) => {
+    setOpenSectionId(openSectionId === id ? null : id);
   };
 
+  const regConfig = globalSettings?.registration;
+  const eventDates = regConfig?.dates || eventConfig.dates;
+  const promoCode = regConfig?.promoCode || eventConfig.promoCode;
+  const discount = regConfig?.discount ?? eventConfig.discount;
+  const siteName = globalSettings?.siteName || 'CrossLife';
+  const logoUrl = globalSettings?.logoUrl || '/images/crosslife-logo.webp';
+  const organiserName = globalSettings?.organiserName || 'Equip Indian Churches';
+
   return (
-    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Mobile Navigation Menu">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-navy-950/70 backdrop-blur-sm transition-opacity"
@@ -30,19 +62,19 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onRegis
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-10 flex flex-col justify-between overflow-y-auto">
+      <div className="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-10 flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-200">
         {/* Top bar with Logo & Close */}
         <div className="p-5 flex items-center justify-between border-b border-slate-100">
           <Link to="/" onClick={onClose} className="flex items-center gap-2">
             <img
-              src="/images/crosslife-logo.webp"
-              alt="CrossLife"
+              src={logoUrl}
+              alt={siteName}
               className="h-8 w-auto object-contain"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <span className="font-extrabold text-navy-950 text-lg tracking-tight">CrossLife</span>
+            <span className="font-extrabold text-navy-950 text-lg tracking-tight">{siteName}</span>
           </Link>
           <button
             onClick={onClose}
@@ -53,86 +85,105 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onRegis
           </button>
         </div>
 
-        {/* Navigation list */}
+        {/* Dynamic Navigation List */}
         <div className="p-5 space-y-2 flex-1">
-          {/* ABOUT ACCORDION */}
-          <div className="border-b border-slate-100 pb-2">
-            <button
-              onClick={() => toggleSection('about')}
-              className="flex items-center justify-between w-full py-2.5 text-base font-bold text-navy-950 text-left"
-            >
-              <span>ABOUT</span>
-              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${openSection === 'about' ? 'rotate-180' : ''}`} />
-            </button>
-            {openSection === 'about' && (
-              <div className="pl-3 py-2 space-y-2 text-sm text-slate-600">
-                <Link to="/about#about" onClick={onClose} className="block py-1.5 hover:text-navy-900">About CrossLife</Link>
-                <Link to="/about#why" onClick={onClose} className="block py-1.5 hover:text-navy-900">Why CrossLife</Link>
-                <Link to="/about#who" onClick={onClose} className="block py-1.5 hover:text-navy-900">Who Is CrossLife For?</Link>
-                <Link to="/about#unique" onClick={onClose} className="block py-1.5 hover:text-navy-900">What's Unique (Substance Over Style)</Link>
-                <Link to="/about#goals" onClick={onClose} className="block py-1.5 hover:text-navy-900">Hopes & Goals</Link>
-                <Link to="/statement-of-faith" onClick={onClose} className="block py-1.5 font-semibold text-navy-800 hover:text-navy-950">Statement of Faith (11 Articles)</Link>
-              </div>
-            )}
-          </div>
+          {navItems.map((item) => {
+            if (item.megaMenu && item.megaMenu.columns?.length > 0) {
+              const isSectionOpen = openSectionId === item.id;
+              return (
+                <div key={item.id} className="border-b border-slate-100 pb-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(item.id)}
+                    className="flex items-center justify-between w-full py-2.5 text-base font-bold text-navy-950 text-left uppercase tracking-wide"
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                        isSectionOpen ? 'rotate-180 text-navy-900' : ''
+                      }`}
+                    />
+                  </button>
 
-          {/* CONFERENCE ACCORDION */}
-          <div className="border-b border-slate-100 pb-2">
-            <button
-              onClick={() => toggleSection('conference')}
-              className="flex items-center justify-between w-full py-2.5 text-base font-bold text-navy-950 text-left"
-            >
-              <span>CONFERENCE</span>
-              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${openSection === 'conference' ? 'rotate-180' : ''}`} />
-            </button>
-            {openSection === 'conference' && (
-              <div className="pl-3 py-2 space-y-2 text-sm text-slate-600">
-                <Link to="/conference" onClick={onClose} className="block py-1.5 hover:text-navy-900">Event Overview</Link>
-                <Link to="/speakers" onClick={onClose} className="block py-1.5 hover:text-navy-900">Speakers (Pastors from Across India)</Link>
-                <Link to="/conference#venue" onClick={onClose} className="block py-1.5 hover:text-navy-900">Venue (Ashirwad Hyderabad)</Link>
-                <Link to="/conference#pricing" onClick={onClose} className="block py-1.5 hover:text-navy-900">Pricing & Early Bird Rates</Link>
-                <Link to="/conference#free-book" onClick={onClose} className="block py-1.5 text-emerald-800 font-medium">Claim Free Book Gift</Link>
-                <Link to="/conference#bookstore" onClick={onClose} className="block py-1.5 hover:text-navy-900">Dedicated Bookstore (For The Truth)</Link>
-              </div>
-            )}
-          </div>
+                  {isSectionOpen && (
+                    <div className="pl-2 py-2 space-y-3 text-sm text-slate-600">
+                      {item.megaMenu.columns.map((col: any, colIdx: number) => (
+                        <div key={colIdx} className="space-y-1.5 pt-1">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                            {col.title}
+                          </span>
+                          {col.items.map((sub: any, sIdx: number) => {
+                            if (sub.href === '#register') {
+                              return (
+                                <button
+                                  key={sIdx}
+                                  type="button"
+                                  onClick={() => {
+                                    onClose();
+                                    onRegisterClick();
+                                  }}
+                                  className="block py-1 text-left w-full hover:text-navy-900 font-semibold text-navy-800"
+                                >
+                                  {sub.label}
+                                </button>
+                              );
+                            }
+                            return (
+                              <Link
+                                key={sIdx}
+                                to={sub.href}
+                                onClick={onClose}
+                                className="block py-1 hover:text-navy-900 transition-colors"
+                              >
+                                <span>{sub.label}</span>
+                                {sub.badge && (
+                                  <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-gold-100 text-navy-900">
+                                    {sub.badge}
+                                  </span>
+                                )}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      ))}
 
-          {/* DIRECT LINKS */}
-          <Link
-            to="/speakers"
-            onClick={onClose}
-            className="block py-3 text-base font-bold text-navy-950 hover:text-navy-700 border-b border-slate-100"
-          >
-            SPEAKERS
-          </Link>
-          <Link
-            to="/partners"
-            onClick={onClose}
-            className="block py-3 text-base font-bold text-navy-950 hover:text-navy-700 border-b border-slate-100"
-          >
-            PARTNERS
-          </Link>
-          <Link
-            to="/faq"
-            onClick={onClose}
-            className="block py-3 text-base font-bold text-navy-950 hover:text-navy-700 border-b border-slate-100"
-          >
-            FAQ
-          </Link>
-          <Link
-            to="/contact"
-            onClick={onClose}
-            className="block py-3 text-base font-bold text-navy-950 hover:text-navy-700 border-b border-slate-100"
-          >
-            CONTACT
-          </Link>
-          <Link
-            to="/statement-of-faith"
-            onClick={onClose}
-            className="block py-3 text-base font-bold text-navy-950 hover:text-navy-700"
-          >
-            STATEMENT OF FAITH
-          </Link>
+                      {item.megaMenu.highlight && (
+                        <div className="p-3 rounded-xl bg-navy-950 text-white mt-3">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-gold-300 uppercase tracking-wider mb-1">
+                            <Sparkles className="w-3 h-3 text-gold-400" />
+                            <span>{item.megaMenu.highlight.title}</span>
+                          </div>
+                          <p className="text-xs text-slate-300 mb-2">
+                            {item.megaMenu.highlight.description}
+                          </p>
+                          <Link
+                            to={item.megaMenu.highlight.ctaHref}
+                            onClick={onClose}
+                            className="text-xs font-bold text-gold-400 hover:text-gold-300 flex items-center gap-1"
+                          >
+                            <span>{item.megaMenu.highlight.ctaText}</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Direct link
+            return (
+              <Link
+                key={item.id}
+                to={item.href || '/'}
+                onClick={onClose}
+                className="block py-3 text-base font-bold text-navy-950 hover:text-navy-700 border-b border-slate-100 uppercase tracking-wide transition-colors"
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Bottom Action Area */}
@@ -140,9 +191,11 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onRegis
           <div className="text-xs text-slate-500 flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-medium text-navy-800">
               <Calendar className="w-3.5 h-3.5 text-navy-600" />
-              <span>{eventConfig.dates}</span>
+              <span>{eventDates}</span>
             </span>
-            <span className="font-semibold text-emerald-700">Code: {eventConfig.promoCode} (-₹500)</span>
+            {discount > 0 && (
+              <span className="font-semibold text-emerald-700">Code: {promoCode} (-₹{discount})</span>
+            )}
           </div>
 
           <Button
@@ -159,10 +212,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onRegis
 
           <div className="text-center">
             <span className="text-[11px] text-slate-500">Organised by </span>
-            <span className="text-[11px] font-bold text-navy-900">{siteConfig.organiser}</span>
+            <span className="text-[11px] font-bold text-navy-900">{organiserName}</span>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default MobileMenu;

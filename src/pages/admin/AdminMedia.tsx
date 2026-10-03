@@ -26,11 +26,12 @@ export const AdminMedia: React.FC = () => {
         const item = await uploadMediaFile(files[i]);
         addMedia(item);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload failed:', err);
-      alert('Upload failed. Please check image file format.');
+      alert(err.message || 'Upload failed. Please verify file format.');
     } finally {
       setIsUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -191,3 +192,5 @@ export const AdminMedia: React.FC = () => {
     </div>
   );
 };
+
+export default AdminMedia;

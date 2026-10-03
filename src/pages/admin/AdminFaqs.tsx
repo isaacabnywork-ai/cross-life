@@ -302,3 +302,5 @@ export const AdminFaqs: React.FC = () => {
     </div>
   );
 };
+
+export default AdminFaqs;

@@ -1,5 +1,6 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import { Link } from 'react-router-dom';
+import { cn, sanitizeUrl } from '../../lib/utils';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'outline-white' | 'ghost';
@@ -21,6 +22,8 @@ export const Button: React.FC<ButtonProps> = ({
   iconPosition = 'right',
   as = 'button',
   href,
+  target,
+  rel,
   ...props
 }) => {
   const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none select-none';
@@ -49,9 +52,26 @@ export const Button: React.FC<ButtonProps> = ({
   );
 
   if (as === 'a' && href) {
+    const safeHref = sanitizeUrl(href);
+    const isInternal = safeHref.startsWith('/') && !safeHref.startsWith('//');
+
+    if (isInternal) {
+      return (
+        <Link
+          to={safeHref}
+          className={cn(baseStyles, variants[variant], sizes[size], className)}
+          {...(props as any)}
+        >
+          {content}
+        </Link>
+      );
+    }
+
     return (
       <a
-        href={href}
+        href={safeHref}
+        target={target}
+        rel={rel || (target === '_blank' ? 'noopener noreferrer' : undefined)}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
@@ -69,3 +89,5 @@ export const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
+
+export default Button;

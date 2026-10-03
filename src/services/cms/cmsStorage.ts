@@ -102,7 +102,10 @@ export const saveStoredCMSData = (data: CMSStoreData): void => {
   try {
     localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(data));
     notifyCMSUpdate();
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.name === 'QuotaExceededError' || err?.code === 22) {
+      alert('Local storage quota exceeded! Please delete older media uploads or configure Supabase Storage for large media files.');
+    }
     console.error('Failed to save CMS data to localStorage:', err);
   }
 };
@@ -137,6 +140,18 @@ export const uploadMediaFile = async (
   altText: string = '',
   caption: string = ''
 ): Promise<MediaItem> => {
+  // 1. MIME-type validation
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Invalid file format. Only images (PNG, JPG, WebP, SVG, GIF) can be uploaded.');
+  }
+
+  // 2. Offline quota check: limit files to 2MB if Supabase is not configured
+  if (!isSupabaseConfigured() && file.size > 2 * 1024 * 1024) {
+    throw new Error(
+      `File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 2MB offline limit. Please compress your image or configure Supabase Storage.`
+    );
+  }
+
   const timestamp = Date.now();
   const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
 

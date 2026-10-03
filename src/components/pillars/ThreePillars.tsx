@@ -24,7 +24,8 @@ export const ThreePillars: React.FC<ThreePillarsProps> = ({ data }) => {
     : brandContent.threePillars;
 
   return (
-    <Section variant="dark-navy" spacing="xl" id="what-is-crosslife" className="relative">
+    <Section variant="dark-navy" spacing="xl" id="pillars" className="relative">
+      <span id="what-is-crosslife" className="sr-only" />
       {/* Background Architectural Accent Lines */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none"

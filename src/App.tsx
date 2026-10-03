@@ -1,9 +1,10 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CMSProvider } from './context/CMSContext';
 import { RegistrationProvider } from './context/RegistrationContext';
 import { Layout } from './components/layout/Layout';
 
-// Public pages
+// Public pages (Directly imported for fastest public first-paint)
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Conference } from './pages/Conference';
@@ -13,18 +14,25 @@ import { FAQ } from './pages/FAQ';
 import { Contact } from './pages/Contact';
 import { StatementOfFaith } from './pages/StatementOfFaith';
 
-// Admin CMS pages
-import { AdminLogin } from './pages/admin/AdminLogin';
-import { AdminLayout } from './pages/admin/AdminLayout';
-import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { AdminPages } from './pages/admin/AdminPages';
-import { AdminPageEditor } from './pages/admin/AdminPageEditor';
-import { AdminNavigation } from './pages/admin/AdminNavigation';
-import { AdminMedia } from './pages/admin/AdminMedia';
-import { AdminFaqs } from './pages/admin/AdminFaqs';
-import { AdminSpeakersPartners } from './pages/admin/AdminSpeakersPartners';
-import { AdminSettings } from './pages/admin/AdminSettings';
-import { AdminActivity } from './pages/admin/AdminActivity';
+// Lazy-loaded Admin CMS Pages (Code-split to isolate admin bundle from public users)
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminPages = lazy(() => import('./pages/admin/AdminPages'));
+const AdminPageEditor = lazy(() => import('./pages/admin/AdminPageEditor'));
+const AdminNavigation = lazy(() => import('./pages/admin/AdminNavigation'));
+const AdminMedia = lazy(() => import('./pages/admin/AdminMedia'));
+const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
+const AdminSpeakersPartners = lazy(() => import('./pages/admin/AdminSpeakersPartners'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
+const AdminActivity = lazy(() => import('./pages/admin/AdminActivity'));
+
+const AdminLoadingFallback = () => (
+  <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white space-y-4">
+    <div className="w-10 h-10 border-4 border-gold-400/20 border-t-gold-400 rounded-full animate-spin" />
+    <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Loading CMS Portal...</span>
+  </div>
+);
 
 export function App() {
   return (
@@ -33,10 +41,24 @@ export function App() {
         <RegistrationProvider>
           <Routes>
             {/* Admin Authentication */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/login"
+              element={
+                <Suspense fallback={<AdminLoadingFallback />}>
+                  <AdminLogin />
+                </Suspense>
+              }
+            />
 
             {/* Protected Admin CMS Dashboard */}
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route
+              path="/admin"
+              element={
+                <Suspense fallback={<AdminLoadingFallback />}>
+                  <AdminLayout />
+                </Suspense>
+              }
+            >
               <Route index element={<AdminDashboard />} />
               <Route path="pages" element={<AdminPages />} />
               <Route path="builder" element={<AdminPageEditor />} />

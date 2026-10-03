@@ -261,6 +261,7 @@ export const AdminPageEditor: React.FC = () => {
       {/* Section Edit Modal */}
       {editingSection && (
         <SectionEditModal
+          key={editingSection.id}
           section={editingSection}
           isOpen={true}
           onClose={() => setEditingSection(null)}
@@ -345,3 +346,5 @@ export const AdminPageEditor: React.FC = () => {
     </div>
   );
 };
+
+export default AdminPageEditor;

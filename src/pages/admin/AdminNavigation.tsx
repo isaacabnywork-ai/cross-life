@@ -360,3 +360,5 @@ export const AdminNavigation: React.FC = () => {
     </div>
   );
 };
+
+export default AdminNavigation;

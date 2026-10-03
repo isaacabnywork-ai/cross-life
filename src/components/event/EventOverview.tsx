@@ -6,12 +6,21 @@ import { eventConfig } from '../../data/event';
 import { Users, Calendar, MapPin, Tag, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Countdown } from './Countdown';
+import { useCMS } from '../../context/CMSContext';
 
 interface EventOverviewProps {
   onRegisterClick: () => void;
 }
 
 export const EventOverview: React.FC<EventOverviewProps> = ({ onRegisterClick }) => {
+  const { globalSettings } = useCMS();
+  const reg = globalSettings?.registration;
+  const earlyBirdPrice = reg?.earlyBirdPrice ?? eventConfig.earlyBirdPrice;
+  const regularPrice = reg?.regularPrice ?? eventConfig.regularPrice;
+  const discount = reg?.discount ?? eventConfig.discount;
+  const promoCode = reg?.promoCode || eventConfig.promoCode;
+  const eventDates = reg?.dates || eventConfig.dates;
+  const venueName = globalSettings?.venueName || eventConfig.venue.name;
   return (
     <Section variant="light-blue" spacing="lg" id="event-overview">
       <Container>
@@ -55,7 +64,7 @@ export const EventOverview: React.FC<EventOverviewProps> = ({ onRegisterClick })
                 When?
               </span>
               <h3 className="text-xl font-extrabold text-navy-950 mb-2">
-                {eventConfig.dates}
+                {eventDates}
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed mb-4">
                 {eventConfig.schedule}. Sessions begin at {eventConfig.startTime} on Tuesday and conclude with lunch on Thursday.
@@ -76,7 +85,7 @@ export const EventOverview: React.FC<EventOverviewProps> = ({ onRegisterClick })
                 Where?
               </span>
               <h3 className="text-xl font-extrabold text-navy-950 mb-2">
-                {eventConfig.venue.name}
+                {venueName}
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed mb-4">
                 {eventConfig.venue.city}, {eventConfig.venue.state}. A dedicated learning centre campus with full dormitory lodging and dining.
@@ -126,26 +135,28 @@ export const EventOverview: React.FC<EventOverviewProps> = ({ onRegisterClick })
                 <div>
                   <span className="text-xs font-bold text-navy-800 uppercase tracking-wider block">Early Bird Rate</span>
                   <div className="flex items-baseline gap-1 mt-0.5">
-                    <span className="text-3xl font-black text-navy-950">₹{eventConfig.earlyBirdPrice.toLocaleString('en-IN')}</span>
+                    <span className="text-3xl font-black text-navy-950">₹{earlyBirdPrice.toLocaleString('en-IN')}</span>
                     <span className="text-xs text-slate-500">/ person</span>
                   </div>
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Regular Rate</span>
-                  <span className="text-lg font-bold text-slate-400 line-through">₹{eventConfig.regularPrice.toLocaleString('en-IN')}</span>
+                  <span className="text-lg font-bold text-slate-400 line-through">₹{regularPrice.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               {/* Promo code badge */}
-              <div className="my-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-amber-700" />
-                  <span className="text-xs font-bold text-amber-950">Save ₹{eventConfig.discount} on Early Bird</span>
+              {discount > 0 && (
+                <div className="my-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-amber-700" />
+                    <span className="text-xs font-bold text-amber-950">Save ₹{discount} on Early Bird</span>
+                  </div>
+                  <span className="font-mono font-bold text-xs bg-amber-500 text-white px-2 py-1 rounded">
+                    {promoCode}
+                  </span>
                 </div>
-                <span className="font-mono font-bold text-xs bg-amber-500 text-white px-2 py-1 rounded">
-                  {eventConfig.promoCode}
-                </span>
-              </div>
+              )}
 
               <Button
                 variant="accent"

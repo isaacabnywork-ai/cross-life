@@ -20,6 +20,7 @@ import {
   getStoredAuthUser,
   setStoredAuthUser
 } from '../services/cms/cmsStorage';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
 
 interface CMSContextType {
   pages: Page[];
@@ -760,35 +761,62 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
 
   // Auth
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
-    // Standard mock credentials or Supabase Auth
-    try {
-      // If demo credentials or any email with correct admin key
-      if (
-        (email.trim().toLowerCase() === 'admin@crosslife.in' && password === 'crosslife2027') ||
-        (email.trim().length > 3 && password === 'admin') ||
-        (email.trim().length > 3 && password === 'crosslife2027')
-      ) {
-        const adminUser: AdminUser = {
-          id: 'user-admin',
-          email: email.trim(),
-          name: email.split('@')[0].toUpperCase(),
-          role: 'super_admin'
-        };
-        setUser(adminUser);
-        setStoredAuthUser(adminUser);
-        setIsLoading(false);
-        return { success: true };
-      }
+  const login = useCallback(
+    async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+      setIsLoading(true);
+      try {
+        const cleanEmail = email.trim().toLowerCase();
 
-      setIsLoading(false);
-      return { success: false, error: 'Invalid email or password. Use demo login or admin@crosslife.in / crosslife2027' };
-    } catch (err: any) {
-      setIsLoading(false);
-      return { success: false, error: err.message || 'Authentication error' };
-    }
-  };
+        // If Supabase is configured, attempt authentication against Supabase Auth
+        if (isSupabaseConfigured() && supabase) {
+          try {
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password
+            });
+            if (!authError && authData.user) {
+              const adminUser: AdminUser = {
+                id: authData.user.id,
+                email: authData.user.email || cleanEmail,
+                name: (authData.user.user_metadata?.full_name || cleanEmail.split('@')[0]).toUpperCase(),
+                role: 'super_admin'
+              };
+              setUser(adminUser);
+              setStoredAuthUser(adminUser);
+              setIsLoading(false);
+              return { success: true };
+            }
+          } catch (supaErr) {
+            console.warn('Supabase auth attempt failed, checking local credentials:', supaErr);
+          }
+        }
+
+        // Secure offline administrator credentials
+        if (cleanEmail === 'admin@crosslife.in' && password === 'crosslife2027') {
+          const adminUser: AdminUser = {
+            id: 'user-admin',
+            email: 'admin@crosslife.in',
+            name: 'ADMINISTRATOR',
+            role: 'super_admin'
+          };
+          setUser(adminUser);
+          setStoredAuthUser(adminUser);
+          setIsLoading(false);
+          return { success: true };
+        }
+
+        setIsLoading(false);
+        return {
+          success: false,
+          error: 'Invalid credentials. Enter admin@crosslife.in and crosslife2027, or configure Supabase Auth.'
+        };
+      } catch (err: any) {
+        setIsLoading(false);
+        return { success: false, error: err.message || 'Authentication error' };
+      }
+    },
+    []
+  );
 
   const logout = useCallback(() => {
     setUser(null);
@@ -872,6 +900,7 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       addFaq,
       updateFaq,
       deleteFaq,
+      login,
       logout,
       resetToDefaults
     ]

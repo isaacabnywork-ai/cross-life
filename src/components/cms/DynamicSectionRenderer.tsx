@@ -124,6 +124,7 @@ export const DynamicSectionRenderer: React.FC<DynamicSectionRendererProps> = ({
             return (
               <RichTextSection
                 key={section.id}
+                id={section.id === 'sec-about-intro' ? 'about' : undefined}
                 data={section.data as any}
                 onCtaClick={onRegisterClick}
               />

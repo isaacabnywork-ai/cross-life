@@ -3,12 +3,26 @@ import { useLocation } from 'react-router-dom';
 import { ArrowUp } from 'lucide-react';
 
 export const ScrollToTop: React.FC = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (hash) {
+      const targetId = hash.replace('#', '');
+      // Slight timeout to let DOM mount if transitioning pages
+      const timer = setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.scrollTo(0, 0);
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, hash]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,3 +49,5 @@ export const ScrollToTop: React.FC = () => {
     </button>
   );
 };
+
+export default ScrollToTop;

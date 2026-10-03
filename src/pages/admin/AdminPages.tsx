@@ -340,3 +340,5 @@ export const AdminPages: React.FC = () => {
     </div>
   );
 };
+
+export default AdminPages;
