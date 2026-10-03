@@ -3,25 +3,38 @@ import { Section } from '../common/Section';
 import { Container } from '../common/Container';
 import { brandContent } from '../../data/content';
 
-export const GoalsSection: React.FC = () => {
+import type { GoalsSectionData } from '../../types/cms';
+
+interface GoalsSectionProps {
+  data?: GoalsSectionData;
+}
+
+export const GoalsSection: React.FC<GoalsSectionProps> = ({ data }) => {
+  const badge = data?.badge || "CONFERENCE OUTCOMES";
+  const heading = data?.heading || "Hopes & Goals";
+  const subtitle = data?.subtitle || "We pray and plan with five distinct, intentional outcomes for every attendee who walks through the doors of CrossLife.";
+  const goals = (data?.goals && data.goals.length > 0)
+    ? data.goals
+    : brandContent.goals;
+
   return (
     <Section variant="white" spacing="xl" id="goals">
       <Container>
         <div className="max-w-3xl mb-16">
           <span className="inline-flex items-center text-xs font-bold tracking-widest uppercase mb-4 px-3 py-1 rounded-full bg-navy-100 text-navy-800 border border-navy-200/50">
-            CONFERENCE OUTCOMES
+            {badge}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-navy-950 tracking-tight leading-tight">
-            Hopes & Goals
+            {heading}
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-            We pray and plan with five distinct, intentional outcomes for every attendee who walks through the doors of CrossLife.
+            {subtitle}
           </p>
         </div>
 
         {/* Elegant Numbered Editorial Layout */}
         <div className="divide-y divide-slate-200 border-y border-slate-200">
-          {brandContent.goals.map((goal, idx) => (
+          {goals.map((goal, idx) => (
             <div
               key={idx}
               className="py-8 sm:py-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline group hover:bg-slate-50/60 transition-colors px-4 -mx-4 rounded-xl"

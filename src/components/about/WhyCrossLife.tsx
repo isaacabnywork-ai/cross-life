@@ -5,7 +5,19 @@ import { brandContent } from '../../data/content';
 import { Church, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export const WhyCrossLife: React.FC = () => {
+import type { WhyCrossLifeSectionData } from '../../types/cms';
+
+interface WhyCrossLifeProps {
+  data?: WhyCrossLifeSectionData;
+}
+
+export const WhyCrossLife: React.FC<WhyCrossLifeProps> = ({ data }) => {
+  const badge = data?.badge || "A BEACON IN A DISTRACTED WORLD";
+  const heading = data?.heading || "Why CrossLife?";
+  const paragraphs = (data?.paragraphs && data.paragraphs.length > 0)
+    ? data.paragraphs
+    : brandContent.whyCrossLife.paragraphs;
+
   return (
     <Section variant="white" spacing="xl" id="why">
       <Container>
@@ -50,29 +62,33 @@ export const WhyCrossLife: React.FC = () => {
           <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
             <div>
               <span className="inline-flex items-center text-xs font-bold tracking-widest uppercase mb-3 px-3 py-1 rounded-full bg-navy-100 text-navy-800 border border-navy-200/50">
-                A BEACON IN A DISTRACTED WORLD
+                {badge}
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-navy-950 tracking-tight leading-[1.15]">
-                Why CrossLife?
+                {heading}
               </h2>
             </div>
 
             <p className="text-base sm:text-lg text-slate-700 font-medium leading-relaxed">
-              {brandContent.whyCrossLife.paragraphs[0]}
+              {paragraphs[0]}
             </p>
 
-            <p className="text-base text-slate-600 leading-relaxed">
-              {brandContent.whyCrossLife.paragraphs[1]}
-            </p>
-
-            <div className="p-6 rounded-2xl bg-navy-50/70 border-l-4 border-navy-800 space-y-2">
-              <h4 className="text-sm font-bold text-navy-950 uppercase tracking-wide">
-                A Unique Three-Fold Convergence
-              </h4>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                {brandContent.whyCrossLife.paragraphs[2]}
+            {paragraphs[1] && (
+              <p className="text-base text-slate-600 leading-relaxed">
+                {paragraphs[1]}
               </p>
-            </div>
+            )}
+
+            {paragraphs[2] && (
+              <div className="p-6 rounded-2xl bg-navy-50/70 border-l-4 border-navy-800 space-y-2">
+                <h4 className="text-sm font-bold text-navy-950 uppercase tracking-wide">
+                  A Unique Three-Fold Convergence
+                </h4>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  {paragraphs[2]}
+                </p>
+              </div>
+            )}
 
             <div className="pt-2">
               <Link

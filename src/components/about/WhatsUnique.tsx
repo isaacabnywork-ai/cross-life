@@ -5,11 +5,19 @@ import { brandContent } from '../../data/content';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Compass, Shield, Users } from 'lucide-react';
 
+import type { WhatsUniqueSectionData } from '../../types/cms';
+
 interface WhatsUniqueProps {
   showFullText?: boolean;
+  data?: WhatsUniqueSectionData;
 }
 
-export const WhatsUnique: React.FC<WhatsUniqueProps> = ({ showFullText = false }) => {
+export const WhatsUnique: React.FC<WhatsUniqueProps> = ({ showFullText: showFullTextProp, data }) => {
+  const showFullText = showFullTextProp !== undefined ? showFullTextProp : (data?.showFullText ?? false);
+  const badge = data?.badge || "THEOLOGICAL DISTINCTIVES";
+  const heading = data?.heading || "What's Unique About CrossLife?";
+  const subtitle = data?.subtitle || "CrossLife is not just another youth event—it's a call to wholehearted, gospel-centered discipleship for young people across India.";
+
   return (
     <Section variant="dark-navy" spacing="xl" id="unique" className="relative overflow-hidden">
       {/* Editorial Watermark / Background Accent */}
@@ -24,13 +32,13 @@ export const WhatsUnique: React.FC<WhatsUniqueProps> = ({ showFullText = false }
         {/* Top Header */}
         <div className="max-w-3xl mb-12 sm:mb-16">
           <span className="inline-flex items-center text-xs font-bold tracking-widest uppercase mb-4 px-3 py-1 rounded-full bg-gold-400/15 text-gold-300 border border-gold-400/30">
-            THEOLOGICAL DISTINCTIVES
+            {badge}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.1]">
-            What's Unique About CrossLife?
+            {heading}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg mt-4 leading-relaxed font-light">
-            CrossLife is not just another youth event—it's a call to wholehearted, gospel-centered discipleship for young people across India.
+            {subtitle}
           </p>
         </div>
 

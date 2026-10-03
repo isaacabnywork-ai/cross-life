@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { useCMS } from '../../context/CMSContext';
 import { siteConfig } from '../../config/site';
 import { eventConfig } from '../../data/event';
 import { Button } from '../common/Button';
 import { Phone, Mail, MapPin, Send, CheckCircle2, Shield, AlertCircle } from 'lucide-react';
 
 export const ContactForm: React.FC = () => {
+  const { globalSettings } = useCMS();
+  const phones = globalSettings?.phones?.length ? globalSettings.phones : siteConfig.phones;
+  const email = globalSettings?.email || siteConfig.email;
+  const venueAddress = globalSettings?.venueAddress || `${eventConfig.venue.name}, ${eventConfig.venue.city}, ${eventConfig.venue.state}`;
+  const organiserName = globalSettings?.organiserName || siteConfig.organiser;
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -63,7 +70,7 @@ export const ContactForm: React.FC = () => {
                     Call Us
                   </h4>
                   <div className="space-y-1 text-sm text-slate-200 font-medium">
-                    {siteConfig.phones.map((phone, idx) => (
+                    {phones.map((phone, idx) => (
                       <a
                         key={idx}
                         href={`tel:${phone.replace(/\s+/g, '')}`}
@@ -86,10 +93,10 @@ export const ContactForm: React.FC = () => {
                     Email Us
                   </h4>
                   <a
-                    href={`mailto:${siteConfig.email}`}
+                    href={`mailto:${email}`}
                     className="text-sm text-slate-200 hover:text-gold-300 transition-colors block"
                   >
-                    {siteConfig.email}
+                    {email}
                   </a>
                 </div>
               </div>
@@ -104,8 +111,7 @@ export const ContactForm: React.FC = () => {
                     Venue
                   </h4>
                   <p className="text-sm text-slate-200 leading-snug">
-                    {eventConfig.venue.name},<br />
-                    {eventConfig.venue.city}, {eventConfig.venue.state}
+                    {venueAddress}
                   </p>
                 </div>
               </div>
@@ -114,7 +120,7 @@ export const ContactForm: React.FC = () => {
 
           <div className="pt-8 mt-8 border-t border-navy-850 text-xs text-slate-400 relative z-10">
             <span>Organised by </span>
-            <strong className="text-white">{siteConfig.organiser}</strong>
+            <strong className="text-white">{organiserName}</strong>
           </div>
         </div>
 

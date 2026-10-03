@@ -6,8 +6,14 @@ import { speakerData } from '../../data/speakers';
 import { SpeakerCard } from './SpeakerCard';
 import { Mic, Sparkles } from 'lucide-react';
 
+import { useCMS } from '../../context/CMSContext';
+
 export const SpeakerSection: React.FC = () => {
-  const hasSpeakers = speakerData.speakers.length > 0;
+  const { speakers } = useCMS();
+  const activeSpeakers = (speakers && speakers.length > 0)
+    ? speakers.filter((s) => s.isActive)
+    : speakerData.speakers;
+  const hasSpeakers = activeSpeakers.length > 0;
 
   return (
     <Section variant="dark-navy" spacing="xl" id="speakers" className="relative">
@@ -31,8 +37,8 @@ export const SpeakerSection: React.FC = () => {
 
         {hasSpeakers ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {speakerData.speakers.map((speaker) => (
-              <SpeakerCard key={speaker.id} speaker={speaker} />
+            {activeSpeakers.map((speaker) => (
+              <SpeakerCard key={speaker.id} speaker={speaker as any} />
             ))}
           </div>
         ) : (

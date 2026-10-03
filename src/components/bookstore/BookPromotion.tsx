@@ -5,12 +5,21 @@ import { eventConfig } from '../../data/event';
 import { Button } from '../common/Button';
 import { Gift, ArrowRight, Check } from 'lucide-react';
 
+import type { BookPromotionSectionData } from '../../types/cms';
+
 interface BookPromotionProps {
   onRegisterClick: () => void;
+  data?: BookPromotionSectionData;
 }
 
-export const BookPromotion: React.FC<BookPromotionProps> = ({ onRegisterClick }) => {
+export const BookPromotion: React.FC<BookPromotionProps> = ({ onRegisterClick, data }) => {
   const { freeBook } = eventConfig;
+  const badge = data?.badge || freeBook.badge;
+  const bookTitle = data?.bookTitle || freeBook.title;
+  const author = data?.author || freeBook.author;
+  const coverImage = data?.coverImageUrl || freeBook.image;
+  const description = data?.description || "Register Now & Receive Your Free Copy — A special gift for registered participants. At CrossLife, we believe God calls young men and women to count their lives worth losing for the surpassing worth of knowing Christ Jesus.";
+  const buttonText = data?.buttonText || "REGISTER NOW & CLAIM GIFT";
 
   return (
     <Section variant="green-tint" spacing="lg" id="free-book">
@@ -27,8 +36,8 @@ export const BookPromotion: React.FC<BookPromotionProps> = ({ onRegisterClick })
                 <div className="absolute -inset-2 bg-emerald-500/20 rounded-2xl blur-lg group-hover:bg-emerald-500/30 transition-all duration-300" />
                 <div className="relative rounded-xl overflow-hidden shadow-2xl border-2 border-emerald-400/40 w-44 sm:w-56 aspect-[2/3] bg-emerald-950">
                   <img
-                    src={freeBook.image}
-                    alt={freeBook.title}
+                    src={coverImage}
+                    alt={bookTitle}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -39,20 +48,20 @@ export const BookPromotion: React.FC<BookPromotionProps> = ({ onRegisterClick })
             <div className="md:col-span-8 space-y-5 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold uppercase tracking-wider">
                 <Gift className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{freeBook.badge}</span>
+                <span>{badge}</span>
               </div>
 
               <div className="space-y-2">
                 <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-                  “{freeBook.title}”
+                  “{bookTitle}”
                 </h3>
                 <div className="text-base sm:text-lg font-medium text-emerald-300">
-                  By {freeBook.author}
+                  By {author}
                 </div>
               </div>
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
-                Register Now & Receive Your Free Copy — A special gift for registered participants. At CrossLife, we believe God calls young men and women to count their lives worth losing for the surpassing worth of knowing Christ Jesus.
+                {description}
               </p>
 
               <div className="space-y-2 pt-2 text-xs sm:text-sm text-slate-300">
@@ -74,7 +83,7 @@ export const BookPromotion: React.FC<BookPromotionProps> = ({ onRegisterClick })
                   icon={<ArrowRight className="w-4 h-4" />}
                   className="py-4 px-8 text-base shadow-lg shadow-emerald-950/40"
                 >
-                  REGISTER NOW & CLAIM GIFT
+                  {buttonText}
                 </Button>
               </div>
             </div>

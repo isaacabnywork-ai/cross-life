@@ -8,18 +8,46 @@ import { HelpCircle, Mail, Phone, ArrowRight } from 'lucide-react';
 import { siteConfig } from '../../config/site';
 import { Link } from 'react-router-dom';
 
+import type { FAQSectionData } from '../../types/cms';
+
 interface FAQAccordionProps {
   showAllCategories?: boolean;
   isCompact?: boolean;
+  data?: FAQSectionData;
 }
+
+import { useCMS } from '../../context/CMSContext';
 
 export const FAQAccordion: React.FC<FAQAccordionProps> = ({ 
   showAllCategories = false,
-  isCompact = false 
+  isCompact: isCompactProp,
+  data 
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>(faqData[0].category);
+  const { faqs } = useCMS();
+  const activeFaqs = (faqs && faqs.length > 0) ? faqs.filter((f) => f.isPublished) : [];
+
+  // Build categories array from activeFaqs if present, else fallback to static faqData
+  const displayFaqData = activeFaqs.length > 0
+    ? Object.entries(
+        activeFaqs.reduce((acc, f) => {
+          if (!acc[f.category]) acc[f.category] = [];
+          acc[f.category].push({ id: f.id, question: f.question, answer: f.answer });
+          return acc;
+        }, {} as Record<string, { id: string; question: string; answer: string }[]>)
+      ).map(([category, items]) => ({ category, items }))
+    : faqData;
+
+  const isCompact = isCompactProp !== undefined ? isCompactProp : (data?.isCompact ?? false);
+  const eyebrow = data?.badge || (isCompact ? "COMMON INQUIRIES" : "FREQUENTLY ASKED QUESTIONS");
+  const title = data?.heading || (isCompact ? "Frequently Asked Questions" : "Everything You Need to Know");
+  const subtitle = data?.subtitle || (isCompact 
+    ? "Quick answers to what's included, eligibility, and conference dates."
+    : "Answers to common questions regarding travel, accommodation, meals, registration, and donations.");
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(displayFaqData[0]?.category || 'General');
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({
-    'overview-1': true
+    'overview-1': true,
+    ...(displayFaqData[0]?.items[0] ? { [displayFaqData[0].items[0].id]: true } : {})
   });
 
   const toggleItem = (id: string) => {
@@ -29,26 +57,28 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({
     }));
   };
 
-  // In compact mode for Homepage, extract the 4 most critical questions
-  const compactItems = [
-    faqData[0].items[0], // What is included in the registration fee?
-    faqData[0].items[1], // Who is eligible to attend?
-    faqData[0].items[2], // What are the dates and timings?
-    faqData[1].items[0]  // How do I apply the discount coupon code?
-  ].filter(Boolean);
+  // In compact mode for Homepage, extract top 4 questions
+  const compactItems = activeFaqs.length > 0
+    ? activeFaqs.slice(0, 4).map((f) => ({ id: f.id, question: f.question, answer: f.answer }))
+    : [
+        faqData[0]?.items[0],
+        faqData[0]?.items[1],
+        faqData[0]?.items[2],
+        faqData[1]?.items[0]
+      ].filter(Boolean);
 
   const categoriesToDisplay = showAllCategories
-    ? faqData
-    : faqData.filter(c => c.category === selectedCategory);
+    ? displayFaqData
+    : displayFaqData.filter(c => c.category === selectedCategory);
 
   if (isCompact) {
     return (
       <Section variant="white" spacing="xl" id="faq">
         <Container size="narrow">
           <SectionHeading
-            eyebrow="COMMON INQUIRIES"
-            title="Frequently Asked Questions"
-            subtitle="Quick answers to what's included, eligibility, and conference dates."
+            eyebrow={eyebrow}
+            title={title}
+            subtitle={subtitle}
           />
 
           <div className="space-y-3 mb-10">
@@ -69,7 +99,7 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({
               to="/faq"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200/80 text-navy-950 font-bold text-xs sm:text-sm uppercase tracking-wider transition-colors"
             >
-              <span>View All 18 FAQs (Travel, Dorms & Aid)</span>
+              <span>{data?.viewAllText || "View All 18 FAQs (Travel, Dorms & Aid)"}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -82,9 +112,9 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({
     <Section variant="white" spacing="xl" id="faq">
       <Container size="narrow">
         <SectionHeading
-          eyebrow="FREQUENTLY ASKED QUESTIONS"
-          title="Everything You Need to Know"
-          subtitle="Answers to common questions regarding travel, accommodation, meals, registration, and donations."
+          eyebrow={eyebrow}
+          title={title}
+          subtitle={subtitle}
         />
 
         {/* Category Filter Tabs (if not showing all) */}

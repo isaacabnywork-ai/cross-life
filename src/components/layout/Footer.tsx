@@ -5,11 +5,17 @@ import { siteConfig } from '../../config/site';
 import { eventConfig } from '../../data/event';
 import { Mail, MapPin } from 'lucide-react';
 
+import { useCMS } from '../../context/CMSContext';
+
 interface FooterProps {
   onRegisterClick: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onRegisterClick }) => {
+  const { globalSettings } = useCMS();
+  const footerSettings = globalSettings.footer;
+  const socials = globalSettings.socials;
+
   return (
     <footer className="bg-navy-950 text-white pt-16 pb-12 border-t border-navy-850">
       <Container>
@@ -18,8 +24,8 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick }) => {
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="inline-block">
               <img
-                src="/images/crosslife-logo.webp"
-                alt="CrossLife"
+                src={globalSettings.logoUrl || "/images/crosslife-logo.webp"}
+                alt={globalSettings.siteName || "CrossLife"}
                 className="h-10 w-auto object-contain brightness-0 invert"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -33,29 +39,29 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick }) => {
             </Link>
 
             <div className="text-gold-400 font-bold tracking-widest text-xs uppercase">
-              ONE LIFE. ONE DESIRE. ONE PURPOSE.
+              {globalSettings.tagline || "ONE LIFE. ONE DESIRE. ONE PURPOSE."}
             </div>
 
             <p className="text-sm text-slate-300 max-w-sm leading-relaxed">
-              CrossLife is a young people’s conference organised by Equip Indian Churches to inspire and equip young people to live for Christ, glorify Christ, and proclaim His Gospel.
+              {footerSettings.aboutText || "CrossLife is a young people’s conference organised by Equip Indian Churches to inspire and equip young people to live for Christ, glorify Christ, and proclaim His Gospel."}
             </p>
 
             <div className="pt-2 text-xs text-slate-400">
               <span className="text-slate-500">Organised by:</span>{' '}
               <a
-                href="https://equipindianchurches.com"
+                href={globalSettings.organiserUrl || "https://equipindianchurches.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-bold text-slate-200 hover:text-gold-300 underline underline-offset-2"
               >
-                {siteConfig.organiser}
+                {globalSettings.organiserName || siteConfig.organiser}
               </a>
             </div>
 
             {/* Social Channels */}
             <div className="flex items-center gap-3 pt-2">
               <a
-                href={siteConfig.socials.instagram}
+                href={socials.instagram || siteConfig.socials.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="CrossLife Instagram"
@@ -128,16 +134,16 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick }) => {
             <div className="space-y-2.5 text-xs text-slate-300">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
-                <span>{eventConfig.venue.fullAddress}</span>
+                <span>{globalSettings.venueAddress || eventConfig.venue.fullAddress}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-gold-400 shrink-0" />
-                <a href={`mailto:${siteConfig.email}`} className="hover:text-gold-300">
-                  {siteConfig.email}
+                <a href={`mailto:${globalSettings.email || siteConfig.email}`} className="hover:text-gold-300">
+                  {globalSettings.email || siteConfig.email}
                 </a>
               </div>
               <div className="flex flex-col gap-1 pl-6 text-slate-300">
-                {siteConfig.phones.map((p, idx) => (
+                {(globalSettings.phones || siteConfig.phones).map((p, idx) => (
                   <a key={idx} href={`tel:${p.replace(/\s+/g, '')}`} className="hover:text-gold-300">
                     {p}
                   </a>
@@ -158,7 +164,7 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick }) => {
 
         {/* Bottom Bar: Copyright & Attribution */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <p>© 2026 - All Rights Reserved Powered by <a href="http://abnyweb.in" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white underline underline-offset-2">ABNY Web</a></p>
+          <p>{footerSettings.copyrightText || "© 2026 - All Rights Reserved Powered by"} <a href={footerSettings.poweredByUrl || "http://abnyweb.in"} target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white underline underline-offset-2">{footerSettings.poweredByText || "ABNY Web"}</a></p>
           <div className="flex items-center gap-6">
             <Link to="/statement-of-faith" className="hover:text-slate-200 transition-colors">Statement of Faith</Link>
             <Link to="/faq" className="hover:text-slate-200 transition-colors">FAQ</Link>

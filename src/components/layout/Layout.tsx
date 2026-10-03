@@ -1,11 +1,12 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { ScrollToTop } from '../common/ScrollToTop';
 import { useRegistration } from '../../context/RegistrationContext';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -16,9 +17,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <ScrollToTop />
       <Header onRegisterClick={openRegistration} />
       <main className="flex-1">
-        {children}
+        {children || <Outlet />}
       </main>
       <Footer onRegisterClick={openRegistration} />
     </div>
   );
 };
+
+export default Layout;

@@ -9,11 +9,18 @@ import { Menu, ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { eventConfig } from '../../data/event';
 
+import { useCMS } from '../../context/CMSContext';
+
 interface HeaderProps {
   onRegisterClick: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
+  const { navigation, globalSettings } = useCMS();
+  const navItems = (navigation && navigation.length > 0)
+    ? navigation.filter((item) => item.isVisible)
+    : (navigationData as any[]);
+
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isScrolled } = useScrollDirection();
@@ -78,35 +85,45 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
     };
   }, [activeMegaMenu]);
 
-  const activeItem = navigationData.find(
+  const activeItem = navItems.find(
     (item) => item.label === activeMegaMenu && item.megaMenu
   );
+
+  const announcement = globalSettings.announcementBar;
 
   return (
     <>
       {/* Top Banner Notice for Early Bird */}
-      <div className="bg-navy-950 text-white text-xs py-2 px-4 border-b border-navy-850 relative z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-[11px] sm:text-xs">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded bg-gold-400 text-navy-950 font-bold uppercase text-[10px]">
-              Early Bird
-            </span>
-            <span className="hidden sm:inline text-slate-300">Save ₹{eventConfig.discount} with code</span>
-            <span className="font-mono font-bold text-gold-300 bg-white/10 px-1.5 py-0.5 rounded">{eventConfig.promoCode}</span>
-            <span className="text-slate-400 hidden md:inline">({eventConfig.dates} • Hyderabad)</span>
-          </div>
+      {announcement.enabled && (
+        <div className="bg-navy-950 text-white text-xs py-2 px-4 border-b border-navy-850 relative z-50">
+          <div className="max-w-7xl mx-auto flex items-center justify-between text-[11px] sm:text-xs">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded bg-gold-400 text-navy-950 font-bold uppercase text-[10px]">
+                {announcement.badgeText || "Early Bird"}
+              </span>
+              <span className="hidden sm:inline text-slate-300">
+                {announcement.text || "Save ₹500 with code"}
+              </span>
+              <span className="font-mono font-bold text-gold-300 bg-white/10 px-1.5 py-0.5 rounded">
+                {announcement.promoCode || eventConfig.promoCode}
+              </span>
+              <span className="text-slate-400 hidden md:inline">
+                ({announcement.datesNotice || `${eventConfig.dates} • Hyderabad`})
+              </span>
+            </div>
 
-          <div className="flex items-center gap-4 text-slate-300">
-            <Link to="/statement-of-faith" className="hover:text-gold-300 transition-colors hidden sm:inline">
-              Statement of Faith
-            </Link>
-            <span className="text-slate-600 hidden sm:inline">•</span>
-            <a href="mailto:contact@crosslife.in" className="hover:text-gold-300 transition-colors">
-              contact@crosslife.in
-            </a>
+            <div className="flex items-center gap-4 text-slate-300">
+              <Link to="/statement-of-faith" className="hover:text-gold-300 transition-colors hidden sm:inline">
+                Statement of Faith
+              </Link>
+              <span className="text-slate-600 hidden sm:inline">•</span>
+              <a href={`mailto:${globalSettings.email || "contact@crosslife.in"}`} className="hover:text-gold-300 transition-colors">
+                {globalSettings.email || "contact@crosslife.in"}
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Sticky Header */}
       <header
@@ -130,8 +147,8 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
           >
             <div className="h-10 sm:h-11 flex items-center">
               <img
-                src="/images/crosslife-logo.webp"
-                alt="CrossLife"
+                src={globalSettings.logoUrl || "/images/crosslife-logo.webp"}
+                alt={globalSettings.siteName || "CrossLife"}
                 className="h-9 sm:h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -147,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ onRegisterClick }) => {
 
           {/* Center Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2" aria-label="Main Navigation">
-            {navigationData.map((item, idx) => {
+            {navItems.map((item, idx) => {
               const hasMegaMenu = !!item.megaMenu;
               const isActive = item.href ? location.pathname === item.href : false;
               const isMegaActive = activeMegaMenu === item.label;

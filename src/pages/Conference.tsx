@@ -3,9 +3,8 @@ import { PageHero } from '../components/common/PageHero';
 import { Section } from '../components/common/Section';
 import { Container } from '../components/common/Container';
 import { EventOverview } from '../components/event/EventOverview';
-import { VenueSection } from '../components/venue/VenueSection';
 import { BookstoreSection } from '../components/bookstore/BookstoreSection';
-import { BookPromotion } from '../components/bookstore/BookPromotion';
+import { DynamicSectionRenderer } from '../components/cms/DynamicSectionRenderer';
 import { useRegistration } from '../context/RegistrationContext';
 import { eventConfig } from '../data/event';
 import { brandContent, type PillarItem } from '../data/content';
@@ -87,14 +86,13 @@ export const Conference: React.FC = () => {
         </Container>
       </Section>
 
-      {/* Venue Section */}
-      <VenueSection />
+      {/* Dynamic CMS Sections for Conference (Venue, Book Promotion, CTA Banner, etc.) */}
+      <DynamicSectionRenderer pageId="page-conference" onRegisterClick={openRegistration} />
 
-      {/* Dedicated Bookstore */}
+      {/* Dedicated Bookstore Section */}
       <BookstoreSection />
-
-      {/* Free Book Promotion */}
-      <BookPromotion onRegisterClick={openRegistration} />
     </>
   );
 };
+
+export default Conference;

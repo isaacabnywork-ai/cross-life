@@ -5,11 +5,26 @@ import { eventConfig } from '../../data/event';
 import { brandContent } from '../../data/content';
 import { Calendar, MapPin, ArrowRight, Quote, Sparkles } from 'lucide-react';
 
+import type { HeroSectionData } from '../../types/cms';
+
 interface HeroProps {
   onRegisterClick: () => void;
+  data?: HeroSectionData;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
+export const Hero: React.FC<HeroProps> = ({ onRegisterClick, data }) => {
+  const eyebrow = data?.eyebrow || eventConfig.badge;
+  const headline = data?.headline || "ONE LIFE.\nONE DESIRE.\nONE PURPOSE.";
+  const subheadline = data?.subheadline || "A conference designed to inspire and equip young people to live for Christ, glorify Christ, and proclaim His Gospel.";
+  const datesText = data?.datesText || eventConfig.dates;
+  const venueCity = data?.venueText || `${eventConfig.venue.city}, Telangana`;
+  const primaryCta = data?.primaryCtaText || "REGISTER NOW";
+  const secondaryCta = data?.secondaryCtaText || "DISCOVER CROSSLIFE";
+  const secondaryHref = data?.secondaryCtaHref || "#what-is-crosslife";
+  const quoteText = data?.quoteText || brandContent.scriptureQuote.text;
+  const quoteAuthor = data?.quoteAuthor || brandContent.scriptureQuote.verse;
+  const earlyBird = data?.earlyBirdNotice || `Early bird ₹${eventConfig.earlyBirdPrice.toLocaleString('en-IN')} (Save ₹${eventConfig.discount} with code ${eventConfig.promoCode})`;
+
   return (
     <section className="relative bg-white pt-8 pb-16 lg:pt-16 lg:pb-24 overflow-hidden">
       {/* Subtle background architectural line motif */}
@@ -37,7 +52,7 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
             <span className="hidden sm:inline text-slate-300">|</span>
             <span className="flex items-center gap-1 font-semibold text-navy-800">
               <MapPin className="w-3.5 h-3.5 text-navy-700" />
-              {eventConfig.venue.city}, Telangana
+              {venueCity}
             </span>
           </div>
         </div>
@@ -48,19 +63,17 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-navy-50 border border-navy-100/80 text-navy-800 text-xs font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-gold-500" />
-              <span>{eventConfig.badge}</span>
+              <span>{eyebrow}</span>
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-navy-950 leading-[1.05]">
-                ONE LIFE.<br />
-                <span className="text-navy-700">ONE DESIRE.</span><br />
-                <span className="text-gold-500">ONE PURPOSE.</span>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-navy-950 leading-[1.05] whitespace-pre-line">
+                {headline}
               </h1>
             </div>
 
             <p className="text-lg sm:text-xl text-slate-600 max-w-xl font-normal leading-relaxed text-balance">
-              A conference designed to inspire and equip young people to live for Christ, glorify Christ, and proclaim His Gospel.
+              {subheadline}
             </p>
 
             {/* Three Pillar Mini Bar */}
@@ -88,16 +101,16 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
                 icon={<ArrowRight className="w-4 h-4" />}
                 className="py-4 px-8 text-base shadow-card bg-navy-900 hover:bg-navy-950"
               >
-                REGISTER NOW
+                {primaryCta}
               </Button>
               <Button
                 variant="secondary"
                 size="lg"
                 as="a"
-                href="#what-is-crosslife"
+                href={secondaryHref}
                 className="py-4 px-8 text-base"
               >
-                DISCOVER CROSSLIFE
+                {secondaryCta}
               </Button>
             </div>
 
@@ -105,10 +118,10 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
             <div className="pt-4 flex items-center gap-3 text-xs text-slate-500">
               <span className="font-semibold text-navy-900 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-navy-700" />
-                {eventConfig.dates}
+                {datesText}
               </span>
               <span>•</span>
-              <span>Early bird ₹{eventConfig.earlyBirdPrice.toLocaleString('en-IN')} (Save ₹{eventConfig.discount} with code <strong className="text-navy-900">{eventConfig.promoCode}</strong>)</span>
+              <span>{earlyBird}</span>
             </div>
           </div>
 
@@ -119,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
               {/* Main Image Frame (Auditorium & Pulpit) */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-navy-950 aspect-[4/3] group">
                 <img
-                  src="/images/preaching.jpg"
+                  src={data?.bgImageUrl || "/images/preaching.jpg"}
                   alt="Word of God being preached at CrossLife Conference"
                   className="w-full h-full object-cover object-center brightness-90 group-hover:scale-105 transition-transform duration-700"
                 />
@@ -140,10 +153,10 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
                   <Quote className="w-6 h-6 text-gold-400 shrink-0 mt-0.5" />
                   <div className="space-y-2">
                     <p className="text-sm sm:text-base font-serif italic text-slate-200 leading-relaxed">
-                      “{brandContent.scriptureQuote.text}”
+                      “{quoteText}”
                     </p>
                     <div className="text-xs font-bold text-gold-400 tracking-wider uppercase text-right">
-                      — {brandContent.scriptureQuote.verse}
+                      — {quoteAuthor}
                     </div>
                   </div>
                 </div>

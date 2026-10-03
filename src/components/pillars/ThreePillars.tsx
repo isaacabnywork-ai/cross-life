@@ -4,8 +4,24 @@ import { Container } from '../common/Container';
 import { brandContent } from '../../data/content';
 import { Cross, Heart, Megaphone, ArrowUpRight } from 'lucide-react';
 
-export const ThreePillars: React.FC = () => {
+import type { ThreePillarsSectionData } from '../../types/cms';
+
+interface ThreePillarsProps {
+  data?: ThreePillarsSectionData;
+}
+
+export const ThreePillars: React.FC<ThreePillarsProps> = ({ data }) => {
   const iconComponents = [Cross, Heart, Megaphone];
+  const badge = data?.badge || "THE CROSSLIFE FOUNDATION";
+  const heading = data?.heading || "What is CrossLife?";
+  const subtitle = data?.subtitle || brandContent.whatIsCrossLife.statement;
+  const pillars = (data?.pillars && data.pillars.length > 0)
+    ? data.pillars.map((p) => ({
+        pillar: p.title,
+        subtitle: p.subtitle,
+        description: p.description
+      }))
+    : brandContent.threePillars;
 
   return (
     <Section variant="dark-navy" spacing="xl" id="what-is-crosslife" className="relative">
@@ -23,20 +39,20 @@ export const ThreePillars: React.FC = () => {
         {/* Editorial Section Introduction */}
         <div className="max-w-3xl mb-16 text-left">
           <span className="inline-flex items-center text-xs font-bold tracking-widest uppercase mb-4 px-3 py-1 rounded-full bg-gold-400/15 text-gold-300 border border-gold-400/30">
-            THE CROSSLIFE FOUNDATION
+            {badge}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-            What is CrossLife?
+            {heading}
           </h2>
           <p className="mt-5 text-lg sm:text-xl text-slate-300 leading-relaxed font-light">
-            {brandContent.whatIsCrossLife.statement}
+            {subtitle}
           </p>
         </div>
 
         {/* The 3 Core Pillars - Architectural Editorial Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {brandContent.threePillars.map((item, idx) => {
-            const IconComponent = iconComponents[idx];
+          {pillars.map((item, idx) => {
+            const IconComponent = iconComponents[idx % iconComponents.length];
             return (
               <div
                 key={idx}

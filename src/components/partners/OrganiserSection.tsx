@@ -6,11 +6,24 @@ import { partnerData, partnerOverview } from '../../data/partners';
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { useCMS } from '../../context/CMSContext';
+import type { OrganiserPartnersSectionData } from '../../types/cms';
+
 interface OrganiserSectionProps {
   isCompact?: boolean;
+  data?: OrganiserPartnersSectionData;
 }
 
-export const OrganiserSection: React.FC<OrganiserSectionProps> = ({ isCompact = false }) => {
+export const OrganiserSection: React.FC<OrganiserSectionProps> = ({ 
+  isCompact: isCompactProp, 
+  data 
+}) => {
+  const { partners } = useCMS();
+  const currentPartners = (partners && partners.length > 0)
+    ? partners.filter((p) => p.isActive)
+    : partnerData;
+
+  const isCompact = isCompactProp !== undefined ? isCompactProp : (data?.isCompact ?? false);
   if (isCompact) {
     return (
       <Section variant="offwhite" spacing="lg" id="organiser">
@@ -119,40 +132,42 @@ export const OrganiserSection: React.FC<OrganiserSectionProps> = ({ isCompact = 
 
         {/* Partner Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {partnerData.map((partner) => (
-            <div
-              key={partner.id}
-              className="bg-white rounded-2xl p-6 shadow-subtle border border-slate-200/80 hover:shadow-card transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-navy-50 text-navy-800 border border-navy-100">
-                    {partner.role}
-                  </span>
-                </div>
-
-                <div className="h-14 mb-4 flex items-center">
-                  {partner.logo ? (
-                    <img
-                      src={partner.logo}
-                      alt={partner.name}
-                      className="max-h-12 max-w-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const fallback = e.currentTarget.parentElement?.querySelector('.partner-logo-fallback') as HTMLElement;
-                        if (fallback) fallback.style.display = 'block';
-                      }}
-                    />
-                  ) : null}
-                  <div className={`partner-logo-fallback ${partner.logo ? 'hidden' : 'block'} text-lg font-black text-navy-950`}>
-                    {partner.name}
+          {currentPartners.map((partner) => {
+            const partnerLogo = (partner as any).logoUrl || (partner as any).logo;
+            return (
+              <div
+                key={partner.id}
+                className="bg-white rounded-2xl p-6 shadow-subtle border border-slate-200/80 hover:shadow-card transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-navy-50 text-navy-800 border border-navy-100">
+                      {partner.role}
+                    </span>
                   </div>
-                </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {partner.description}
-                </p>
-              </div>
+                  <div className="h-14 mb-4 flex items-center">
+                    {partnerLogo ? (
+                      <img
+                        src={partnerLogo}
+                        alt={partner.name}
+                        className="max-h-12 max-w-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.partner-logo-fallback') as HTMLElement;
+                          if (fallback) fallback.style.display = 'block';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`partner-logo-fallback ${partnerLogo ? 'hidden' : 'block'} text-lg font-black text-navy-950`}>
+                      {partner.name}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {partner.description}
+                  </p>
+                </div>
 
               {partner.website && (
                 <div className="pt-4 mt-4 border-t border-slate-100">
@@ -168,7 +183,8 @@ export const OrganiserSection: React.FC<OrganiserSectionProps> = ({ isCompact = 
                 </div>
               )}
             </div>
-          ))}
+          );
+        })}
         </div>
       </Container>
     </Section>

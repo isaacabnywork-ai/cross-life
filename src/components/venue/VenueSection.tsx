@@ -6,14 +6,28 @@ import { eventConfig } from '../../data/event';
 import { MapPin, Navigation, Bed, Utensils, ArrowRight } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const VenueSection: React.FC = () => {
+import type { VenueSectionData } from '../../types/cms';
+
+interface VenueSectionProps {
+  data?: VenueSectionData;
+}
+
+export const VenueSection: React.FC<VenueSectionProps> = ({ data }) => {
+  const eyebrow = data?.badge || "CONFERENCE LOCATION";
+  const title = data?.heading || data?.venueName || eventConfig.venue.name;
+  const subtitle = data?.subtitle || `${eventConfig.venue.city}, ${eventConfig.venue.state} — A tranquil campus designed for focused teaching, shared meals, and deep community.`;
+  const venueImage = data?.imageUrl || eventConfig.venue.images[0];
+  const directionsUrl = data?.directionsUrl || eventConfig.venue.mapUrl;
+  const fullAddress = data?.fullAddress || eventConfig.venue.fullAddress;
+  const description = data?.description || "Ashirwad Global Learning Centre provides an ideal learning environment away from urban bustle, allowing attendees to focus entirely on God's Word, prayer, and intentional relationship-building.";
+
   return (
     <Section variant="white" spacing="xl" id="venue">
       <Container>
         <SectionHeading
-          eyebrow="CONFERENCE LOCATION"
-          title={eventConfig.venue.name}
-          subtitle={`${eventConfig.venue.city}, ${eventConfig.venue.state} — A tranquil campus designed for focused teaching, shared meals, and deep community.`}
+          eyebrow={eyebrow}
+          title={title}
+          subtitle={subtitle}
         />
 
         {/* Venue Split Editorial Feature */}
@@ -22,8 +36,8 @@ export const VenueSection: React.FC = () => {
           <div className="lg:col-span-7">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-100 aspect-[16/10] group bg-navy-950">
               <img
-                src={eventConfig.venue.images[0]}
-                alt={eventConfig.venue.name}
+                src={venueImage}
+                alt={title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-transparent to-transparent" />
@@ -33,11 +47,11 @@ export const VenueSection: React.FC = () => {
                     Conference Campus
                   </span>
                   <div className="text-xl font-bold text-white">
-                    Ashirwad Global Learning Centre
+                    {title}
                   </div>
                 </div>
                 <a
-                  href={eventConfig.venue.mapUrl}
+                  href={directionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-md text-xs font-bold text-white hover:bg-white hover:text-navy-950 transition-colors"
@@ -54,13 +68,13 @@ export const VenueSection: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-navy-800 text-sm font-bold">
                 <MapPin className="w-4 h-4 text-navy-700" />
-                <span>{eventConfig.venue.fullAddress}</span>
+                <span>{fullAddress}</span>
               </div>
               <h3 className="text-2xl font-black text-navy-950 leading-tight">
                 Dedicated Campus for Study & Fellowship
               </h3>
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                Ashirwad Global Learning Centre provides an ideal learning environment away from urban bustle, allowing attendees to focus entirely on God's Word, prayer, and intentional relationship-building.
+                {description}
               </p>
             </div>
 
